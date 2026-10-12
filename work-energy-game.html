@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MISSION: WORK & ENERGY</title>
+<style>
+:root{--ok:#16a34a;--no:#dc2626;--bl:#2563eb;--ac:#f59e0b;--ink:#1f2937}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:17px/1.65 "Noto Sans Thai","Sarabun","Tahoma",sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 10%,#7c3aed 0,transparent 40%),radial-gradient(circle at 85% 90%,#0ea5e9 0,transparent 40%),#1e3a8a;background-attachment:fixed}
+#hud{position:sticky;top:0;z-index:5;background:#0f172ad9;color:#fff;padding:8px 12px;display:flex;gap:10px;align-items:center}
+#hud b{color:#fde047;font-size:20px}
+#pg{flex:1;height:10px;background:#ffffff33;border-radius:9px;overflow:hidden}
+#pg i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#fde047);transition:width .4s}
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:14px;padding:12px 18px;min-height:48px;color:#fff;background:var(--bl);box-shadow:0 5px 0 #1e3a8a;margin:4px 4px 8px 0}
+button:active{transform:translateY(4px);box-shadow:0 1px 0 #1e3a8a}
+button:disabled{opacity:.55;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.g{background:var(--ok);box-shadow:0 5px 0 #166534}.o{background:var(--ac);box-shadow:0 5px 0 #b45309;color:#1f2937}.gr{background:#64748b;box-shadow:0 5px 0 #334155}
+#app{max-width:820px;margin:0 auto;padding:14px}
+.card{background:#fff;border-radius:24px;padding:18px;box-shadow:0 10px 0 #0003,0 18px 30px #0004;margin-bottom:14px;animation:pop .3s}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+h1{margin:.2em 0;font-size:30px;line-height:1.2}h2{font-size:21px;line-height:1.4;margin:.6em 0}
+.big{font-size:66px;text-align:center;animation:bob 2.2s infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row span,.tag{font-size:15px}
+.tag{background:#fef3c7;border-radius:20px;padding:0 10px;font-weight:700}
+.bar{height:12px;background:#e5e7eb;border-radius:9px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;width:100%;background:#22c55e}
+.opt{display:block;width:100%;text-align:left;background:#eef2ff;color:var(--ink);box-shadow:0 4px 0 #c7d2fe;margin:8px 0}
+.opt:disabled{opacity:1}
+.opt.ok{background:#bbf7d0;box-shadow:0 4px 0 #16a34a}.opt.no{background:#fecaca;box-shadow:0 4px 0 #dc2626}
+input{font:inherit;font-size:22px;width:150px;padding:10px;border:3px solid #c7d2fe;border-radius:12px}
+.fb{border-radius:14px;padding:10px 14px;margin:8px 0}.fb.ok{background:#dcfce7}.fb.no{background:#fee2e2}
+#hn p{background:#fef9c3;border-radius:10px;padding:6px 12px;margin:6px 0}
+.say{background:#e0f2fe;border-radius:16px;padding:8px 14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.two div{border-radius:14px;padding:8px 12px}
+.yes{background:#dcfce7}.nop{background:#fee2e2}
+.f{background:#1e3a8a;color:#fff;border-radius:14px;padding:8px 14px;text-align:center;font-size:24px;font-weight:700;margin:8px 0}
+.st{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.lock{filter:grayscale(1);opacity:.7}
+.rv{border-top:2px dashed #cbd5e1;padding:8px 0}
+.cf{position:fixed;top:-40px;font-size:30px;z-index:9;animation:fall 3.5s linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(115vh) rotate(540deg)}}
+@media(max-width:520px){.two{grid-template-columns:1fr}h1{font-size:25px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div id="hud">⭐ <b id="sc">0</b> คะแนน<div id="pg"><i></i></div><button id="sn" class="gr" style="padding:4px 12px;min-height:40px;margin:0" onclick="tg()" aria-label="เปิด-ปิดเสียง">🔊</button></div>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[rnd(0,a.length-1)];
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const R=h=>{$('#app').innerHTML=h;scrollTo(0,0)};
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const T={work:'ความหมายของงานทางฟิสิกส์',calcw:'การคำนวณงาน (W = Fs)',calcp:'กำลังและการคำนวณกำลัง (P = W/t)',mach:'เครื่องกลอย่างง่าย'};
+const ST=[0,{n:'Learn the Rule',th:'เรียนรู้กฎแห่งงานและพลังงาน',ic:'📘'},{n:'Choose the Best',th:'เลือกคำตอบที่ถูกต้อง',ic:'🎯'},{n:'Complete the Mission',th:'คำนวณให้สำเร็จ',ic:'🧮'},{n:'Energy Adventure Quiz',th:'ศึกสุดท้ายพิชิตงานและพลังงาน',ic:'🏆'}];
+let G=null,S=null,snd=true,ac,tm;
+
+/* ---------- เสียง ---------- */
+function beep(f,d,t,w){if(!snd)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),s=ac.currentTime+(w||0);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(.15,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const sfx=k=>k=='ok'?(beep(660,.15),beep(880,.25,'sine',.15)):k=='no'?beep(180,.35,'sawtooth'):[523,659,784,1047].forEach((f,i)=>beep(f,.25,'triangle',i*.15));
+function tg(){snd=!snd;$('#sn').textContent=snd?'🔊':'🔇'}
+function confetti(){for(let i=0;i<36;i++){const s=document.createElement('span');s.className='cf';s.textContent=pick(['🎉','⭐','⚡','🏅','✨']);s.style.left=rnd(0,95)+'vw';s.style.animationDelay=(Math.random()*1.2)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),5000)}}
+
+/* ---------- คลังข้อสอบ ---------- */
+const m=(tp,q,o,e,p)=>({k:'mc',tp,q,o,e,p});
+const Q1=[
+m('work','🧱 นักเรียนผลักกำแพงเต็มแรง แต่กำแพงไม่ขยับ เกิดงานทางฟิสิกส์หรือไม่ เพราะเหตุใด',['ไม่เกิดงาน เพราะมีแรงแต่วัตถุไม่เคลื่อนที่','เกิดงาน เพราะออกแรงมาก','เกิดงาน เพราะรู้สึกเหนื่อย','ไม่เกิดงาน เพราะกำแพงหนัก'],'งานเกิดเมื่อมีแรงกระทำและวัตถุเคลื่อนที่ตามทิศของแรง กำแพงไม่ขยับ จึงไม่เกิดงาน แม้เราจะเหนื่อยก็ตาม',5),
+m('calcw','ข้อใดคือสูตรหางานเมื่อแรงและการกระจัดอยู่ในทิศเดียวกัน',['W = F × s','P = W ÷ t','W = F ÷ s','W = s ÷ F'],'งาน (W) = แรง (F) × ระยะทางที่วัตถุเคลื่อนที่ (s) หน่วยเป็นจูล (J)',5),
+m('calcp','🤖 มอเตอร์สองเครื่องทำงานเท่ากัน เครื่อง A ใช้เวลาน้อยกว่าเครื่อง B เครื่องใดมีกำลังมากกว่า',['เครื่อง A','เครื่อง B','เท่ากัน','บอกไม่ได้'],'กำลัง = งาน ÷ เวลา เมื่อทำงานเท่ากัน ใช้เวลาน้อยกว่าจึงมีกำลังมากกว่า',5)];
+const Q2=[
+m('work','ข้อใดเกิดงานทางฟิสิกส์',['ยกกล่องจากพื้นขึ้นวางบนโต๊ะ','ยืนถือกระเป๋าอยู่นิ่ง ๆ','นั่งอ่านหนังสือ','ดันตู้หนักแต่ตู้ไม่ขยับ'],'ยกกล่องขึ้นโต๊ะ มีแรงยกและกล่องเคลื่อนที่ขึ้นตามทิศของแรง จึงเกิดงาน ส่วนข้ออื่นไม่มีการเคลื่อนที่ตามแรง',10),
+m('calcw','หน่วยของงานในระบบ SI คือข้อใด',['จูล (J)','วัตต์ (W)','นิวตัน (N)','เมตร (m)'],'งานมีหน่วยเป็นจูล (J) ส่วนวัตต์ (W) เป็นหน่วยของกำลัง นิวตันเป็นหน่วยของแรง',10),
+m('calcw','ออกแรง 20 นิวตัน ผลักกล่องไปตามแนวแรง 5 เมตร ทำงานกี่จูล',['100 จูล','25 จูล','15 จูล','4 จูล'],'W = Fs = 20 × 5 = 100 จูล',10),
+m('calcp','กำลังหมายถึงข้อใด',['อัตราการทำงาน หรืองานที่ทำได้ต่อหนึ่งหน่วยเวลา','แรงที่ใช้ผลักวัตถุ','ระยะทางที่วัตถุเคลื่อนที่','น้ำหนักของวัตถุ'],'กำลัง (P) = งาน ÷ เวลา บอกว่าทำงานได้เร็วแค่ไหน',10),
+m('calcp','กำลัง 1 วัตต์ เท่ากับข้อใด',['งาน 1 จูล ในเวลา 1 วินาที','แรง 1 นิวตัน ระยะ 1 เมตร','งาน 1 จูล ระยะ 1 เมตร','ระยะ 1 เมตร ในเวลา 1 วินาที'],'1 วัตต์ = 1 จูลต่อวินาที (1 J/s)',10),
+m('mach','ข้อใดกล่าวถูกต้องเกี่ยวกับรอกเดี่ยวตายตัว',['เปลี่ยนทิศทางของแรงดึง แต่ไม่ผ่อนแรง','ผ่อนแรงลงครึ่งหนึ่ง','ทำให้งานที่ต้องทำลดลง','ต้องออกแรงมากกว่าน้ำหนักเป็น 2 เท่า'],'รอกตายตัวช่วยให้ดึงลงเพื่อยกขึ้นได้ (เปลี่ยนทิศทาง) แต่แรงที่ใช้เท่ากับน้ำหนักวัตถุ',10),
+m('mach','ข้อใดอธิบายประโยชน์ของพื้นเอียงได้ถูกต้อง',['ใช้แรงน้อยลง แต่ต้องเคลื่อนที่ไกลขึ้น','ใช้แรงมากขึ้น แต่เคลื่อนที่ใกล้ลง','ทำให้งานที่ต้องใช้เป็นศูนย์','ทำให้ไม่ต้องออกแรงเลย'],'พื้นเอียงผ่อนแรงโดยเพิ่มระยะทาง งานรวมโดยประมาณยังเท่าเดิม (ถ้าไม่คิดแรงเสียดทาน)',10),
+m('mach','🪨 การใช้ชะแลงงัดก้อนหิน ใช้หลักของเครื่องกลอย่างง่ายชนิดใด',['คาน','รอก','พื้นเอียง','ล้อและเพลา'],'ชะแลงมีจุดหมุนและแขนแรง จึงทำงานเป็นคาน ช่วยผ่อนแรงในการงัดวัตถุ',10)];
+const Q4=[
+m('work','🚶 สถานการณ์ใดเกิดงานทางฟิสิกส์',['เข็นรถเข็นให้เคลื่อนที่ไปข้างหน้า','ถือถุงยืนรอรถเมล์','ดันตู้หนักแต่ตู้ไม่ขยับ','ถือกล่องยืนนิ่ง ๆ'],'เข็นรถแล้วรถเคลื่อนที่ตามแรง จึงเกิดงาน ส่วนข้ออื่นวัตถุไม่เคลื่อนที่',5),
+{k:'num',tp:'calcw',q:'📦 ยกกล่องขึ้นสูง 3 เมตร ด้วยแรง 40 นิวตัน ทำงานกี่จูล',a:120,u:'จูล (J)',e:'W = Fs = 40 × 3 = 120 จูล',p:5},
+{k:'num',tp:'calcp',q:'🛒 เข็นรถด้วยแรง 60 นิวตัน ไปตามแนวแรง 15 เมตร ใช้เวลา 30 วินาที กำลังกี่วัตต์',a:30,u:'วัตต์ (W)',e:'งาน W = Fs = 60 × 15 = 900 J แล้ว P = W ÷ t = 900 ÷ 30 = 30 วัตต์',p:8},
+m('calcw','🧳 ลากกระเป๋าไปตามพื้นราบด้วยแรง 25 นิวตัน ตามแนวการเคลื่อนที่ ไปได้ 8 เมตร ทำงานกี่จูล',['200 J','33 J','17 J','3.1 J'],'W = Fs = 25 × 8 = 200 จูล',8),
+m('mach','🚚 คนงานเข็นของขึ้นรถบรรทุกด้วยพื้นเอียง แทนการยกขึ้นตรง ๆ ข้อใดถูก',['ใช้แรงน้อยลง แต่ระยะที่ต้องเข็นมากขึ้น','ใช้แรงน้อยลงและระยะสั้นลง','ใช้แรงมากขึ้นแต่ระยะสั้นลง','ไม่ต้องออกแรงเลย'],'พื้นเอียงแลกแรงที่น้อยลงกับระยะทางที่ไกลขึ้น',8),
+m('mach','🏗️ รอกเดี่ยวเคลื่อนที่ยกวัตถุหนัก 100 นิวตัน (ไม่คิดน้ำหนักรอกและแรงเสียดทาน) ต้องออกแรงดึงประมาณเท่าใด',['50 นิวตัน','100 นิวตัน','200 นิวตัน','25 นิวตัน'],'รอกเดี่ยวเคลื่อนที่ผ่อนแรงลงครึ่งหนึ่ง จึงใช้แรงประมาณ 50 นิวตัน แต่ต้องดึงเชือกไกลเป็น 2 เท่า',10),
+{k:'num',tp:'calcp',q:'🪣 เด็กยกถังน้ำหนัก 150 นิวตัน ให้สูงขึ้น 4 เมตร ใช้เวลา 12 วินาที กำลังเฉลี่ยกี่วัตต์',a:50,u:'วัตต์ (W)',e:'งาน W = Fs = 150 × 4 = 600 J แล้ว P = W ÷ t = 600 ÷ 12 = 50 วัตต์',p:10},
+m('calcp','⚙️ เครื่อง A กำลัง 100 วัตต์ ทำงาน 10 วินาที เครื่อง B กำลัง 50 วัตต์ ทำงาน 30 วินาที เครื่องใดทำงานได้มากกว่า',['เครื่อง B (1,500 J)','เครื่อง A (1,000 J)','เท่ากัน','เปรียบเทียบไม่ได้'],'จาก W = P × t: A = 100 × 10 = 1,000 J, B = 50 × 30 = 1,500 J ดังนั้น B ทำงานมากกว่า แม้กำลังน้อยกว่า',10)];
+const gens=[
+()=>{const F=rnd(2,20)*5,s=rnd(2,12),W=F*s;return{tp:'calcw',q:`🧑‍🔧 ${pick(['ผลักรถเข็น','ลากกล่อง','ดึงเลื่อน'])}ด้วยแรง ${F} นิวตัน ทำให้วัตถุเคลื่อนที่ตามแนวแรง ${s} เมตร จงหางานที่ทำ`,a:W,u:'จูล (J)',h:['เลือกสูตรงาน: W = F × s','แทนค่า: W = '+F+' × '+s,'คำนวณ: คูณ '+F+' กับ '+s+' แล้วใส่หน่วยจูล'],e:`ขั้น 1 สูตร W = Fs<br>ขั้น 2 แทนค่า W = ${F} × ${s}<br>ขั้น 3 W = ${W} จูล`}},
+()=>{const P=rnd(2,20)*5,t=rnd(2,10),W=P*t;return{tp:'calcp',q:`🏗️ เครื่องยกของทำงาน ${W} จูล ใช้เวลา ${t} วินาที จงหากำลังของเครื่อง`,a:P,u:'วัตต์ (W)',h:['เลือกสูตรกำลัง: P = W ÷ t (W ตัวนี้คืองาน)','แทนค่า: P = '+W+' ÷ '+t,'คำนวณ: หาร '+W+' ด้วย '+t+' แล้วใส่หน่วยวัตต์'],e:`ขั้น 1 สูตร P = W ÷ t (W คืองาน ${W} จูล)<br>ขั้น 2 แทนค่า P = ${W} ÷ ${t}<br>ขั้น 3 P = ${P} วัตต์`}},
+()=>{const P=rnd(2,12)*5,t=rnd(2,6),W=P*t,ss=[2,4,5,6,8,10].filter(x=>W%x==0),s=pick(ss),F=W/s;return{tp:'calcp',q:`🧑‍🏭 ลากกล่องด้วยแรง ${F} นิวตัน ไปตามแนวแรง ${s} เมตร ใช้เวลา ${t} วินาที จงหากำลัง (ต้องหางานก่อน)`,a:P,u:'วัตต์ (W)',h:['หางานก่อนด้วย W = F × s แล้วค่อยหากำลังด้วย P = W ÷ t','งาน W = '+F+' × '+s,'กำลัง P = (งานที่ได้) ÷ '+t],e:`ขั้น 1 งาน W = Fs = ${F} × ${s} = ${W} จูล<br>ขั้น 2 P = W ÷ t = ${W} ÷ ${t}<br>ขั้น 3 P = ${P} วัตต์`}},
+()=>{const F=rnd(2,20)*5,s=rnd(2,10),W=F*s;return{tp:'calcw',q:`🚜 ออกแรงลากวัตถุไปตามแนวแรง ${s} เมตร ทำงานได้ ${W} จูล ต้องออกแรงกี่นิวตัน`,a:F,u:'นิวตัน (N)',h:['จาก W = F × s จะได้ F = W ÷ s','แทนค่า: F = '+W+' ÷ '+s,'คำนวณ: หาร '+W+' ด้วย '+s],e:`ขั้น 1 จัดสูตร F = W ÷ s<br>ขั้น 2 แทนค่า F = ${W} ÷ ${s}<br>ขั้น 3 F = ${F} นิวตัน`}},
+()=>{const P=rnd(2,10)*10,t=rnd(2,10),W=P*t;return{tp:'calcp',q:`⚡ เครื่องสูบน้ำกำลัง ${P} วัตต์ ทำงานได้ ${W} จูล ใช้เวลากี่วินาที`,a:t,u:'วินาที (s)',h:['จาก P = W ÷ t จะได้ t = W ÷ P','แทนค่า: t = '+W+' ÷ '+P,'คำนวณ: หาร '+W+' ด้วย '+P],e:`ขั้น 1 จัดสูตร t = W ÷ P<br>ขั้น 2 แทนค่า t = ${W} ÷ ${P}<br>ขั้น 3 t = ${t} วินาที`}}];
+
+/* ---------- บทเรียน ---------- */
+const LS=[
+['🤖🧑‍🔬','งานทางฟิสิกส์คืออะไร?','<p class=say>โรโบ: "แบกกระเป๋าหนักแล้วเหนื่อย แปลว่าทำงานไหม?"</p><p>ในวิทยาศาสตร์ <b>งาน</b> เกิดเมื่อมี <b>แรงกระทำต่อวัตถุ</b> และวัตถุ <b>เคลื่อนที่ไปในทิศทางเดียวกับแรง</b> ถ้าขาดอย่างใดอย่างหนึ่ง = ไม่เกิดงาน</p>'],
+['📦🧳🧱','อย่างไหนเกิดงาน?','<div class=two><div class=yes>✅ <b>เกิดงาน</b><br>📦 ยกกล่องขึ้นโต๊ะ<br>🧳 ลากกระเป๋าไปข้างหน้า<br>🛒 เข็นรถขึ้นทางลาด</div><div class=nop>❌ <b>ไม่เกิดงาน</b><br>🧱 ผลักกำแพงไม่ขยับ<br>🏋️ ถือกล่องยืนนิ่ง ๆ</div></div>'],
+['📏⚡','สูตรของงาน','<div class=f><i>W</i> = F × s</div><p><i>W</i> = <b>งาน</b> (หน่วย จูล, J) · F = แรง (นิวตัน, N) · s = ระยะที่เคลื่อนที่ (เมตร, m)</p><p class=say>⚠️ ระวัง! <i>W</i> ในสูตรหมายถึง "งาน" ส่วนหน่วย <b>W (วัตต์)</b> เป็นหน่วยของ "กำลัง"</p><p>ตัวอย่าง: แรง 10 N ผลักไป 3 m → W = 10 × 3 = <b>30 J</b></p>'],
+['🔋⏱️','พลังงานและกำลัง','<p><b>พลังงาน</b> คือความสามารถในการทำงาน เมื่อทำงาน = มีการถ่ายโอนพลังงาน (หน่วย จูล เหมือนกัน)</p><div class=f>P = W ÷ t</div><p><b>กำลัง (P)</b> = งานที่ทำได้ใน 1 วินาที หน่วย <b>วัตต์ (W)</b> โดย 1 W = 1 J/s</p><p>ตัวอย่าง: งาน 60 J ใน 3 s → P = 60 ÷ 3 = <b>20 วัตต์</b></p><p>งานเท่ากัน ใช้เวลาน้อยกว่า → กำลังมากกว่า</p>'],
+['🪵📐🎡','เครื่องกลอย่างง่าย','<p>🪵 <b>คาน</b> มีจุดหมุน ช่วยผ่อนแรง เช่น ชะแลง ที่เปิดขวด</p><p>📐 <b>พื้นเอียง</b> ใช้แรงน้อยลง แต่ต้องเคลื่อนที่ไกลขึ้น เช่น ทางลาดขึ้นรถ</p><p>🎡 <b>รอก</b> ตายตัว = เปลี่ยนทิศทางแรง · เคลื่อนที่ = ผ่อนแรงลงประมาณครึ่งหนึ่ง</p><p class=say>เครื่องกลช่วย <b>ผ่อนแรง</b> ได้ แต่ <b>ไม่ได้ทำให้งานที่ต้องใช้ลดลง</b></p>']];
+function lesson(i){const l=LS[i];R(`<div class=card><div class=big>${l[0]}</div><h2>${l[1]}</h2>${l[2]}<div>${i>0?`<button class=gr onclick="lesson(${i-1})">◀ ก่อนหน้า</button>`:''}${i<LS.length-1?`<button onclick="lesson(${i+1})">ถัดไป ▶</button>`:'<button class=g onclick="startStage(1)">ไปทำแบบทดสอบ ✏️</button>'}</div><span class=tag>หน้า ${i+1}/${LS.length}</span></div>`)}
+
+/* ---------- หน้าจอหลัก ---------- */
+function newGame(){G={score:0,bonus:0,log:[],stages:{},streak:0};S=null;updHud()}
+function updHud(){$('#sc').textContent=G?G.score:0;const d=G?Object.values(G.stages).filter(x=>x.pass).length:0,f=S&&S.run?S.i/S.qs.length:0;$('#pg i').style.width=Math.min(100,(d+f)/4*100)+'%'}
+function home(){clearInterval(tm);G=null;S=null;updHud();R(`<div class=card style="text-align:center"><div class=big>🤖⚡🧑‍🔬</div><h1>MISSION: WORK & ENERGY</h1><p><b>ภารกิจพิชิตโลกงานและพลังงาน</b></p><div style="text-align:left"><p>🎯 <b>กติกา</b></p><p>• เริ่มที่ 0 คะแนน ผ่าน 4 ด่าน ตอบถูกได้คะแนน ถูกต่อเนื่อง 3 ข้อขึ้นไปและตอบเร็วได้โบนัส<br>• ผ่านด่านต้องตอบถูกอย่างน้อย 60% จึงจะปลดล็อกด่านถัดไป<br>• ตอบผิดไม่เสียคะแนน และขอคำใบ้ได้ไม่หักคะแนน<br>• ทุกข้อมีคำอธิบาย กดปุ่ม 🔊 เพื่อเปิด–ปิดเสียง</p></div><button class=g onclick="newGame();hub()">เริ่มเล่น 🚀</button></div>`)}
+function hub(){clearInterval(tm);S=null;updHud();let h='<div class=card><h2>🗺️ แผนที่ภารกิจ</h2></div>';for(let i=1;i<=4;i++){const s=G.stages[i],lk=i>1&&!(G.stages[i-1]&&G.stages[i-1].pass);h+=`<div class="card st ${lk?'lock':''}"><div><b>${ST[i].ic} ด่าน ${i}: ${ST[i].n}</b><br><span>${ST[i].th}</span><br>${lk?'🔒 ผ่านด่านก่อนหน้าเพื่อปลดล็อก':s?(s.pass?'✅ ผ่านแล้ว ':'❌ ยังไม่ผ่าน ')+'⭐'.repeat(s.stars)+' · '+s.sc+' คะแนน':'ยังไม่เล่น'}</div><button class="${s?'o':'g'}" ${lk?'disabled':''} onclick="go(${i})">${i==1&&!s?'เริ่มเรียนรู้':s?'เล่นอีกครั้ง':'เริ่มด่านนี้'}</button></div>`}
+h+=`<div>${G.stages[4]?'<button class=o onclick=summary()>📊 ดูสรุปผล</button>':''}<button class=gr onclick=home()>🔄 เริ่มเล่นใหม่ทั้งหมด</button></div>`;R(h)}
+const go=i=>i==1?lesson(0):startStage(i);
+
+/* ---------- ระบบด่าน ---------- */
+function startStage(id){const o=G.stages[id];if(o){G.score-=o.sc;G.bonus-=o.bn;delete G.stages[id]}
+G.log=G.log.filter(l=>l.st!=id);G.streak=0;
+const qs=id==1?Q1:id==2?shuf(Q2):id==3?shuf(gens).map(g=>({k:'num',p:15,...g()})):Q4;
+S={id,qs,i:0,sc:0,ok:0,bn:0,run:true,over:false,per:id==2?20:id==3?40:0,tot:id==4?240:0,max:qs.reduce((a,q)=>a+q.p,0),t0:Date.now()};
+if(S.tot)S.tdl=Date.now()+S.tot*1000;startTick();showQ()}
+function startTick(){clearInterval(tm);tm=setInterval(()=>{if(!S||!S.run)return;const full=S.tot||S.per;if(!full)return;
+const now=Date.now(),rem=S.tot?(S.tdl-now)/1000:(S.dl-now)/1000;
+if(!S.tot&&S.ans)return;
+const b=$('#tb'),l=$('#tm');if(b){b.style.width=Math.max(0,rem/full*100)+'%';b.style.background=rem<6?'#ef4444':'#22c55e'}
+if(l)l.textContent=S.tot?'⏱️ เวลารวม '+fmt(Math.max(0,Math.ceil(rem))):'⏱️ '+Math.max(0,Math.ceil(rem))+' วินาที';
+if(rem<=0){if(S.tot){S.over=true;const n=$('#nx');if(n)n.textContent='⏰ หมดเวลา ดูผลด่าน'}if(!S.ans)done(false,'(หมดเวลา)',true)}},250)}
+function showQ(){const q=S.q=S.qs[S.i];S.ans=false;if(S.per)S.dl=Date.now()+S.per*1000;S.hn=0;
+const lv=S.id==4?`<span class=tag>${q.p==5?'ง่าย':q.p==8?'ปานกลาง':'ท้าทาย'}</span>`:'';let body;
+if(q.k=='mc'){q.sh=shuf(q.o);body=q.sh.map((t,i)=>`<button class=opt onclick="pk(${i})">${'กขคง'[i]}. ${t}</button>`).join('')}
+else body=`<div class=row><input id=inp type=text inputmode=decimal autocomplete=off placeholder="ตัวเลข" onkeydown="if(event.key=='Enter')chk()"><b>${q.u}</b></div><div>${'<button class=g onclick=chk()>✅ ตรวจคำตอบ</button>'}${q.h?'<button class=o id=hb onclick=hint()>💡 ขอคำใบ้</button>':''}</div><div id=hn></div>`;
+R(`<div class=card><div class=row><b>${ST[S.id].ic} ด่าน ${S.id}</b><span>ข้อ ${S.i+1}/${S.qs.length}</span>${lv}<span id=tm></span></div>${S.per||S.tot?'<div class=bar><i id=tb></i></div>':''}<h2>${q.q}</h2>${body}<div id=fb></div></div>`);updHud();const i=$('#inp');if(i)i.focus()}
+function pk(i){if(S.ans)return;const t=S.q.sh[i];done(t==S.q.o[0],t,false)}
+function chk(){if(S.ans)return;const v=$('#inp').value.trim().replace(',','.');if(v===''||isNaN(+v)){$('#fb').innerHTML='<div class="fb no">กรอกตัวเลขก่อนนะ (ทศนิยมใช้จุดได้)</div>';return}
+done(Math.abs(+v-S.q.a)<0.01,v+' '+S.q.u,false)}
+function hint(){const q=S.q;if(S.hn>=q.h.length)return;S.hn++;$('#hn').innerHTML=q.h.slice(0,S.hn).map((x,i)=>`<p>💡 คำใบ้ ${i+1}: ${x}</p>`).join('');if(S.hn>=q.h.length)$('#hb').disabled=true}
+function done(ok,given,to){if(S.ans)return;S.ans=true;const q=S.q;let g=0,b=0;
+if(ok){G.streak++;g=q.p;if(G.streak>=3)b+=3;if(S.per&&(S.dl-Date.now())/1000>S.per*.5)b+=2;S.ok++}else G.streak=0;
+S.sc+=g+b;S.bn+=b;G.score+=g+b;G.bonus+=b;
+const ans=q.k=='mc'?q.o[0]:q.a+' '+q.u;
+G.log.push({st:S.id,tp:q.tp,q:q.q,ok,given,ans,e:q.e});
+if(q.k=='mc')document.querySelectorAll('.opt').forEach((x,i)=>{x.disabled=true;if(q.sh[i]==q.o[0])x.classList.add('ok');else if(q.sh[i]==given)x.classList.add('no')});
+else document.querySelectorAll('.card button,#inp').forEach(x=>x.disabled=true);
+sfx(ok?'ok':'no');
+$('#fb').innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'🎉 <b>ถูกต้อง!</b> +'+g+(b?' (โบนัส +'+b+')':''):(to?'⏰ <b>หมดเวลา!</b>':'❌ <b>ยังไม่ถูกนะ</b>')+' คำตอบที่ถูกคือ <b>'+ans+'</b>'}<p>💡 ${q.e}</p></div><button class=g id=nx onclick=nx()>${S.over?'⏰ หมดเวลา ดูผลด่าน':S.i+1>=S.qs.length?'ดูผลด่าน 🏁':'ข้อต่อไป ▶'}</button>`;
+updHud();$('#nx').focus()}
+function nx(){S.i++;if(S.i>=S.qs.length||S.over)finish();else showQ()}
+function finish(){clearInterval(tm);S.run=false;
+for(let j=S.i;j<S.qs.length;j++){const q=S.qs[j];G.log.push({st:S.id,tp:q.tp,q:q.q,ok:false,given:'(ไม่ได้ทำ เพราะหมดเวลา)',ans:q.k=='mc'?q.o[0]:q.a+' '+q.u,e:q.e})}
+const n=S.qs.length,r=S.ok/n,pass=r>=.6;let pb=0;if(S.ok==n)pb+=5;if(S.id==4&&pass&&!S.over)pb+=5;
+S.sc+=pb;S.bn+=pb;G.score+=pb;G.bonus+=pb;
+const stars=!pass?0:r>=.9?3:r>=.75?2:1;
+G.stages[S.id]={sc:S.sc,bn:S.bn,ok:S.ok,n,pass,stars,max:S.max,time:Math.round((Date.now()-S.t0)/1000)};
+updHud();const id=S.id;pass?sfx('win'):0;if(pass&&id==4)confetti();
+R(`<div class=card style="text-align:center"><div class=big>${pass?(id==4?'🏆':'🎖️'):'💪'}</div><h1>${pass?(id==4?'ปลดล็อกถ้วยรางวัล!':'ผ่านด่าน '+id+'!'):'เกือบแล้ว! ลองอีกครั้ง'}</h1><p style="font-size:30px">${stars?'⭐'.repeat(stars):'☆☆☆'}</p><p>ตอบถูก <b>${S.ok}/${n}</b> ข้อ · ได้ <b>${S.sc}</b> คะแนน${pb?' (รวมโบนัสจบด่าน +'+pb+')':''}</p><p>${pass?'ยอดเยี่ยม! ความรู้ของคุณแน่นขึ้นแล้ว':'ต้องตอบถูกอย่างน้อย 60% จึงจะผ่าน ทบทวนคำอธิบายแล้วลองใหม่ได้เลย'}</p>
+${pass&&id<4?`<button class=g onclick="go(${id+1})">ไปด่านต่อไป ▶</button>`:''}${pass&&id==4?'<button class=g onclick=summary()>📊 ดูสรุปผล</button>':''}${!pass?`<button class=o onclick="go(${id})">🔁 ลองอีกครั้ง</button>`:''}${!pass&&id==4?'<button class=g onclick=summary()>📊 ดูสรุปผล</button>':''}<button class=gr onclick=hub()>🗺️ แผนที่ด่าน</button></div>`)}
+
+/* ---------- สรุปผล ---------- */
+function summary(){clearInterval(tm);const L=G.log,ok=L.filter(l=>l.ok).length,wr=L.length-ok,mx=Object.values(G.stages).reduce((a,x)=>a+x.max,0),tt=Object.values(G.stages).reduce((a,x)=>a+x.time,0),base=G.score-G.bonus,pct=mx?base/mx*100:0;
+const tier=pct>=85?['🧙‍♂️','ปรมาจารย์งานและพลังงาน','สุดยอดมาก! คุณเข้าใจงานและกำลังอย่างลึกซึ้ง ถ่ายทอดให้เพื่อน ๆ ได้เลย ✨']:pct>=60?['🧠','นักคิดนักคำนวณ','เก่งมาก! คุณคำนวณและวิเคราะห์ได้ดี ทบทวนอีกนิดก็เป็นปรมาจารย์แล้ว 🌟']:['🔭','นักสำรวจพลังงาน','ภูมิใจที่คุณลุยจนจบ! ทุกข้อที่พลาดคือโอกาสเรียนรู้ ลองเล่นอีกครั้งแล้วจะดีขึ้นแน่นอน 💪'];
+const tp={};L.forEach(l=>{const t=tp[l.tp]=tp[l.tp]||{n:0,k:0};t.n++;if(l.ok)t.k++});
+const rows=Object.keys(tp).map(k=>{const p=Math.round(tp[k].k/tp[k].n*100);return `<p>${p>=70?'✅':'📚'} ${T[k]} — ${tp[k].k}/${tp[k].n} ข้อ <b>${p>=70?'ทำได้ดี':'ควรทบทวน'}</b></p>`}).join('');
+const sr=[1,2,3,4].map(i=>{const s=G.stages[i];return s?`<p>${ST[i].ic} ด่าน ${i}: ${s.pass?'ผ่าน':'ยังไม่ผ่าน'} ${'⭐'.repeat(s.stars)} (${s.ok}/${s.n} ข้อ, ${s.sc} คะแนน)</p>`:''}).join('');
+R(`<div class=card style="text-align:center"><div class=big>${tier[0]}</div><h1>${tier[1]}</h1><p>${tier[2]}</p></div><div class=card><h2>📊 ผลการเล่น</h2><p>คะแนนรวม <b>${G.score}</b> (คะแนนจากคำตอบ ${base}/${mx} + โบนัส ${G.bonus})<br>ตอบถูก <b>${ok}</b> ข้อ · ตอบผิด/ไม่ได้ทำ <b>${wr}</b> ข้อ<br>เวลาที่ใช้ในด่านทั้งหมด <b>${fmt(tt)}</b> นาที</p>${sr}</div><div class=card><h2>🎯 หัวข้อของคุณ</h2>${rows}</div><div><button class=g onclick="newGame();hub()">🔁 เล่นอีกครั้ง</button><button class=o onclick=rv()>📝 ทบทวนคำตอบ</button><button class=gr onclick=hub()>🗺️ แผนที่ด่าน</button></div><div id=rv></div>`)}
+function rv(){const e=$('#rv');if(e.innerHTML){e.innerHTML='';return}
+e.innerHTML='<div class=card><h2>📝 ทบทวนคำตอบ</h2>'+G.log.map((l,i)=>`<div class=rv><p>${l.ok?'✅':'❌'} <b>ด่าน ${l.st} ข้อ ${i+1}</b>: ${l.q}</p><p>คำตอบของคุณ: ${l.given}${l.ok?'':'<br>เฉลย: <b>'+l.ans+'</b>'}</p><p>💡 ${l.e}</p></div>`).join('')+'</div>';e.scrollIntoView({behavior:'smooth'})}
+home();
+</script></body></html>
